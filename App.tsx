@@ -1,38 +1,40 @@
+import {StatusBar, StyleSheet} from 'react-native';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
+
+import {useAuth} from './src/hooks/useAuth';
+import {useTodos} from './src/hooks/useTodos';
+import {LockScreen} from './src/screens/LockScreen';
+import {TodoListScreen} from './src/screens/TodoListScreen';
+
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
+ * Root app component.
+ * Shows the lock screen until the user authenticates, then the todo list.
  */
-
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
-
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+  const {isUnlocked, authStatus, isAuthenticating, authenticate} =
+    useAuth();
+  const {todos, addTodo, editTodo, deleteTodo} = useTodos();
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <StatusBar barStyle="dark-content" />
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        {isUnlocked ? (
+          <TodoListScreen
+            todos={todos}
+            onAddTodo={addTodo}
+            onEditTodo={editTodo}
+            onDeleteTodo={deleteTodo}
+          />
+        ) : (
+          <LockScreen
+            authStatus={authStatus}
+            isAuthenticating={isAuthenticating}
+            onAuthenticate={authenticate}
+          />
+        )}
+      </SafeAreaView>
     </SafeAreaProvider>
-  );
-}
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
   );
 }
 

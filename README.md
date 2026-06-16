@@ -1,97 +1,65 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Secured Todos
 
-# Getting Started
+Bare React Native app with Expo modules. A simple todo list is gated behind device authentication via `expo-local-authentication`.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## How it works
 
-## Step 1: Start Metro
+1. **Launch** — the app opens on a lock screen. It checks whether the device has a screen lock or biometrics enrolled.
+2. **No security set up** — if nothing is enrolled, the lock screen explains what to do and links to system settings. When you return to the app, it re-checks automatically.
+3. **Unlock** — tap **Unlock** to open the OS auth prompt (Face ID, Touch ID, fingerprint, or device PIN/pattern/passcode).
+4. **Todo list** — after a successful auth, you can add, edit, and delete todos. Empty titles are ignored.
+5. **Re-lock** — sending the app to the background or switching away re-locks it. Todos stay in memory and are still there after you unlock again.
+6. **Data** — todos are in-memory only. They survive background/foreground within the same app session, but are cleared when the app process is killed.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+State lives in two hooks in `App.tsx`: `useAuth` (lock/unlock) and `useTodos` (todo list). The UI switches between `LockScreen` and `TodoListScreen` based on auth state.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Setup
 
-```sh
-# Using npm
-npm start
+Requires Node `>= 22.11.0` (see `.nvmrc`), JDK 17, Android Studio, and Xcode + CocoaPods for iOS. See the [React Native environment guide](https://reactnative.dev/docs/set-up-your-environment) if needed.
 
-# OR using Yarn
-yarn start
+```bash
+git clone <repository-url>
+cd todos
+nvm use
+npm install
+cd ios && pod install && cd ..
 ```
 
-## Step 2: Build and run your app
+Before running, set up device security on your emulator or phone (see below).
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## Run
+First open ios/android emulator or connect physical device
 
-### Android
+on Terminal 1
+```bash
+## for running metro dev server
+npm run start
+```
 
-```sh
-# Using npm
+on Terminal 2
+```bash
+## for running android
 npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+## for running ios
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+Tests:
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+npm test
+```
 
-## Step 3: Modify your app
+## Device authentication
 
-Now that you have successfully run the app, let's make changes!
+The app unlocks only after the OS auth prompt succeeds. If nothing is enrolled, the lock screen links to system settings.
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+**Android (recommended for testing)** — set a real screen lock in **Settings → Security** (PIN, pattern, or password). The emulator validates it.
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+**iOS Simulator**
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+- **Face ID / Touch ID** — use **Features → Face ID → Enrolled**, then **Matching Face** when prompted. This works as expected.
+- **Passcode fallback** — the simulator shows a passcode UI, but it does **not** validate a real passcode; any input may succeed. This is an **iOS Simulator limitation**, not an app bug.
 
-## Congratulations! :tada:
+**Physical iPhone** — use Face ID, Touch ID, or a real passcode for full auth behavior.
 
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
